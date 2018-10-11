@@ -96,6 +96,7 @@ public class Soul{
 	
 	public void UpdateAppearance(){
 		// This is where things get a little weird. For the most part, this is color and sundries, but if ever we want to have visual cues on a soul for something else, this would be where it get's activated.
+		model = new SoulModel();
 		int[] colorRGB = new int[]{127,127,127};//This is both GOOD and EVIL, Gray
 		if((DominantScore>0&&average<0)||(DominantScore<0&&average>0))
 			//do nothing - this is an 'in spite of' soul, which we're coloring as grey.
@@ -150,7 +151,8 @@ public class Soul{
 		for(int circle=0; circle < model.circleTable.size();circle++){
 			model.circleTable.get(circle).set(3,color);
 		}
-		
+		if(soulStatus==Status.ANGEL || soulStatus == Status.ARCHANGEL)
+			model.AddHalo();
 		//This is where Sundries are handled
 	}
 	

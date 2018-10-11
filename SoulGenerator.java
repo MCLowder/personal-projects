@@ -57,6 +57,9 @@ public class SoulGenerator{
 					newCircle[3] = soulSample.model.circleTable.get(circle).get(3);
 					artist.BresenCircle(canvas,newCircle,true);
 				}
+				//The following two lines are cheater - eventually we'll make this part of proper filling
+				artist.FloodFill(canvas,150,500,soulSample.model.edgeTable.get(0).get(2),canvas.getRGB(0,0));
+				//artist.FloodFill(canvas,150,37,((190<<16)+(190<<8)+190),canvas.getRGB(0,0));
 				frame.getContentPane().add(new JLabel(new ImageIcon(canvas)));
 				frame.pack();
 				frame.setVisible(true);

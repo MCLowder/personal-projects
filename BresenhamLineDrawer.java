@@ -380,19 +380,47 @@ public class BresenhamLineDrawer{
 	
 	//Consider adding a floodfill and YX fill? I know floodfill is 'toylike', but it's the only way to fill circles
 	
-	public static void FloodFill(BufferedImage canvas, int x, int y, int color, int colToFill){ // renamed to Circlefill, since this depends on it being a nice circle
+	public static void FloodLine(BufferedImage canvas, int x, int y, int color, int colToFill){ // renamed to Circlefill, since this depends on it being a nice circle
 		int targetPixel = canvas.getRGB(x,y);
+		int xint = x;
 		if(targetPixel==colToFill){
 			canvas.setRGB(x,y,color);
-			FloodFill(canvas,x+1,y,color,colToFill);
-			FloodFill(canvas,x-1,y,color,colToFill);
-			/*FloodFill(canvas,x,y-1,color,colToFill);
-			FloodFill(canvas,x,y+1,color,colToFill);*/
+			while(canvas.getWidth()>x+1 && canvas.getRGB(x+1,y)==colToFill){
+				canvas.setRGB(x+1,y,color);
+				x++;
+			}
+			x=xint;
+			while(x>0 && canvas.getRGB(x-1,y)==colToFill){
+				canvas.setRGB(x-1,y,color);
+				x--;
+			}
 		}
-		/*while(canvas.getRGB(x+1,y)==colToFill){
-			FloodFill(canvas,x,y+1,color,colToFill);
-			x++;
-		}*/
+		else
+			return;
+	}
+	public static void FloodFill(BufferedImage canvas, int x, int y, int color, int colToFill){
+		FloodLine(canvas,x,y,color,colToFill);
+		int yint = y;
+		while(y+1<canvas.getHeight() && canvas.getRGB(x,y+1)==colToFill){
+			FloodLine(canvas,x,y+1,color,colToFill);
+			y++;
+		}
+		y=yint;
+		while(y>0 && canvas.getRGB(x,y-1)==colToFill){
+			FloodLine(canvas,x,y-1,color,colToFill);
+			y--;
+		}
+	}
+	
+	public static void YXFill(BufferedImage canvas, SoulModel model){
+		for(int poly = 0; poly < model.polygonTable.size()-1;poly++){
+			// find all of the intersections
+			for(int scanline=0;scanline<canvas.getHeight()-1;scanline++){
+				
+			}
+		}
+		// Sort by Y, and then by X
+		// Call BresenDraw the correct numer of times
 	}
 	
 	public static void main(String args[]){
