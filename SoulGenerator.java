@@ -32,19 +32,34 @@ public class SoulGenerator{
 				System.out.println(soulSample.Bio);
 				if(debugMode)
 					System.out.println(Arrays.toString(soulSample.ethicScores));
-				
-		JFrame frame = new JFrame("Line Drawer");
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);		
-		BufferedImage canvas = new BufferedImage(601, 601, BufferedImage.TYPE_INT_RGB);
-		BresenhamLineDrawer artist = new BresenhamLineDrawer();
-		String[] blegh = new String[]{null};
-		int[] line1 = new int[]{0,0,600,600,soulSample.color};
-		int[] line2 = new int[]{0,600,600,0,soulSample.color};
-		artist.BresenDraw(canvas,blegh,line1);
-		artist.BresenDraw(canvas,blegh,line2);
-		frame.getContentPane().add(new JLabel(new ImageIcon(canvas))); // Look up more regarding how ImageIcon works - this is sufficient for now, but best to know more.
-		frame.pack();
-		frame.setVisible(true);
+				// Display block for showing off the model
+				JFrame frame = new JFrame("Line Drawer");
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);		
+				BufferedImage canvas = new BufferedImage(300, 800, BufferedImage.TYPE_INT_RGB);
+				BresenhamLineDrawer artist = new BresenhamLineDrawer();
+				SimpleGraphicsPackage graphics = new SimpleGraphicsPackage();
+				String[] blegh = new String[]{null};
+				// Now we have to loop through the Model's tables to draw everything correctly.
+				for(int line = 0;line < soulSample.model.edgeTable.size();line++){
+					int[] newLine = new int[5];
+					newLine[0] = soulSample.model.vertexTable.get(soulSample.model.edgeTable.get(line).get(0)).get(0);
+					newLine[1] = soulSample.model.vertexTable.get(soulSample.model.edgeTable.get(line).get(0)).get(1);
+					newLine[2] = soulSample.model.vertexTable.get(soulSample.model.edgeTable.get(line).get(1)).get(0);
+					newLine[3] = soulSample.model.vertexTable.get(soulSample.model.edgeTable.get(line).get(1)).get(1);
+					newLine[4] = soulSample.model.edgeTable.get(line).get(2);
+					artist.BresenDraw(canvas,blegh,graphics.LineClipper(canvas,newLine));
+				}
+				for(int circle = 0;circle < soulSample.model.circleTable.size();circle++){
+					int[] newCircle = new int[4];
+					newCircle[0] = soulSample.model.circleTable.get(circle).get(0);
+					newCircle[1] = soulSample.model.circleTable.get(circle).get(1);
+					newCircle[2] = soulSample.model.circleTable.get(circle).get(2);
+					newCircle[3] = soulSample.model.circleTable.get(circle).get(3);
+					artist.BresenCircle(canvas,newCircle,true);
+				}
+				frame.getContentPane().add(new JLabel(new ImageIcon(canvas)));
+				frame.pack();
+				frame.setVisible(true);
 		
 				System.out.println("");
 			}

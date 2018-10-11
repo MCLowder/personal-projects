@@ -19,7 +19,9 @@ public class Soul{
 	public int DominantScore = 0;
 	public Status soulStatus;
 	public String Bio;
-	public int color;
+	
+	public SoulModel model = new SoulModel();
+	public int color; // might be able to get rid of this, since we're assigning it to the model
 	public int[] position = new int[]{0,0,0}; // Could possibly get away with 2d, but might as well be 3d
 	
 	public void UpdateStats(){
@@ -98,7 +100,7 @@ public class Soul{
 		if((DominantScore>0&&average<0)||(DominantScore<0&&average>0))
 			//do nothing - this is an 'in spite of' soul, which we're coloring as grey.
 			colorRGB[0]=127;
-		else if(DominantEthic==Ethic.PRIDE||DominantEthic==Ethic.HUMILITY){ // Purple, {128,0,128};
+		else if(DominantEthic==Ethic.PRIDE||DominantEthic==Ethic.HUMILITY){ // Purple, {64,0,128}; Turns out even amounts is more of a pink (IE magenta)
 			colorRGB[0]=64;
 			colorRGB[1] = 0;
 		}
@@ -142,6 +144,12 @@ public class Soul{
 		
 		//This is where color is converted and assigned
 		color = (colorRGB[0]<<16) + (colorRGB[1]<<8) + (colorRGB[2]);
+		for(int line=0; line < model.edgeTable.size();line++){
+			model.edgeTable.get(line).set(2,color);
+		}
+		for(int circle=0; circle < model.circleTable.size();circle++){
+			model.circleTable.get(circle).set(3,color);
+		}
 		
 		//This is where Sundries are handled
 	}

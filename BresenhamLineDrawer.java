@@ -9,6 +9,7 @@ public class BresenhamLineDrawer{
 	static long caseTotal1, caseTotal2, caseTotal3, caseTotal4, caseTotal5;
 	
 	public static void BresenDraw(BufferedImage canvas, String[] args, int[] line){ // x1, int y1, int x2, int y2){ //needs to be static, or else the main can't call it
+	
 		int x1 = line[0];
 		int y1 = line[1];
 		int x2 = line[2];
@@ -20,20 +21,6 @@ public class BresenhamLineDrawer{
 			col = 0;
 		int dX = x2 - x1;
 		int dY = y2 - y1;
-		//here's the color block
-		/*int r, g, b;
-		if(Arrays.asList(args).contains("-color")){
-			r = (int)(Math.random() * 255);
-			g = (int)(Math.random() * 255);
-			b = (int)(Math.random() * 255);
-			if((r+g+b) < 150){
-				r=g=b=50;
-			}
-		}
-		else{
-			r=g=b=255;
-		}
-		int col = new Color(r,g,b).getRGB(); */
 		int r,g,b;
 		r=g=b=0;
 		if(col==0){
@@ -343,6 +330,71 @@ public class BresenhamLineDrawer{
 		}
 	}
 	
+	public static void BresenCircle(BufferedImage canvas, int[] circle, boolean filled){
+		// Basic preemptive variable declaration
+		int xc = circle[0];
+		int yc = circle[1];
+		int r = circle[2];
+		int col;
+		if(circle.length==4)
+			col = circle[3];
+		else
+			col = 0;
+		int red,g,b;
+		red=g=b=0;
+		if(col==0){
+			col = new Color(255,255,255).getRGB();
+			red=g=b=255;
+		}
+		//On to the algorithm;
+		int x=0;
+		int y=r;
+		int p = 3 - (2*r);
+		CirclePoints(canvas,x,xc,y,yc,col);
+		while(x<y){
+			CirclePoints(canvas,x,xc,y,yc,col);
+			if(p<0){
+				p += ((4*x)+6);
+			}
+			else{
+				p += ((4*(x-y))+10);
+				y--;
+			}
+			x++;
+		}
+		CirclePoints(canvas,x,xc,y,yc,col);
+		if(filled)
+			FloodFill(canvas,xc,yc,col,canvas.getRGB(xc,yc));
+	}
+	
+	public static void CirclePoints(BufferedImage canvas, int x, int xc, int y, int yc, int color){
+		canvas.setRGB(xc-x,yc-y,color);
+		canvas.setRGB(xc+x,yc-y,color);
+		canvas.setRGB(xc-x,yc+y,color);
+		canvas.setRGB(xc+x,yc+y,color);
+		canvas.setRGB(xc-y,yc-x,color);
+		canvas.setRGB(xc+y,yc-x,color);
+		canvas.setRGB(xc-y,yc+x,color);
+		canvas.setRGB(xc+y,yc+x,color);
+	}
+	
+	//Consider adding a floodfill and YX fill? I know floodfill is 'toylike', but it's the only way to fill circles
+	
+	public static void FloodFill(BufferedImage canvas, int x, int y, int color, int colToFill){ // renamed to Circlefill, since this depends on it being a nice circle
+		int targetPixel = canvas.getRGB(x,y);
+		if(targetPixel==colToFill){
+			canvas.setRGB(x,y,color);
+			FloodFill(canvas,x+1,y,color,colToFill);
+			FloodFill(canvas,x-1,y,color,colToFill);
+			/*FloodFill(canvas,x,y-1,color,colToFill);
+			FloodFill(canvas,x,y+1,color,colToFill);*/
+		}
+		/*while(canvas.getRGB(x+1,y)==colToFill){
+			FloodFill(canvas,x,y+1,color,colToFill);
+			x++;
+		}*/
+	}
+	
 	public static void main(String args[]){
 		//This all sets up the space we will be drawing on
 		JFrame frame = new JFrame("Line Drawer");
@@ -366,14 +418,11 @@ public class BresenhamLineDrawer{
 				endPoints[i][3] = y2 = (int)(Math.random() * canvas.getHeight());
 				BresenDraw(canvas, args, endPoints[i]);
 			}
-			//BresenDraw(canvas,args,300,300,0,300);
 			
 			//This paints the resulting canvas to a visible window
 			frame.getContentPane().add(new JLabel(new ImageIcon(canvas))); // Look up more regarding how ImageIcon works - this is sufficient for now, but best to know more.
 			frame.pack();
 			frame.setVisible(true);
-			// System.out.println("Line endpoints as an array: ");
-			// System.out.println(Arrays.deepToString(endPoints)); // Good practice for being able to manipulate generated lines later, but our use of the case prints makes it redundant
 			
 			if(Arrays.asList(args).contains("-debug")){
 				System.out.println("");
