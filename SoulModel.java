@@ -1,17 +1,23 @@
 // import block
 import java.util.ArrayList;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.swing.*;
 
 // package import block
 
 public class SoulModel{
 	
-	public ArrayList<ArrayList<Integer>> vertexTable = new ArrayList<ArrayList<Integer>>();
+	/*public ArrayList<ArrayList<Integer>> vertexTable = new ArrayList<ArrayList<Integer>>();
 	public ArrayList<ArrayList<Integer>> edgeTable = new ArrayList<ArrayList<Integer>>();
 	public ArrayList<ArrayList<Integer>> polygonTable = new ArrayList<ArrayList<Integer>>();
+	public ArrayList<ArrayList<Integer>> surfaceTable = new ArrayList<ArrayList<Integer>>();
 	// public int[][] polygonTable = new int[0][4]; // Traditionally, this would be a 3 wide table, referenced in the below table calling color.
 	// public int[][] surfaceTable = new int[][]; // Since this more or less requires both dimensions to be variable, bit of a pain in java. If we get the ArrayList working, might be included later.
 	public ArrayList<ArrayList<Integer>> circleTable = new ArrayList<ArrayList<Integer>>();
-	// When 3d becomes a thing, this is where we start adding to it
+	// When 3d becomes a thing, this is where we start adding to it*/
+	
+	public GeometricTables tables = new GeometricTables();
 	
 	public void AddHalo(){
 		/*Hardest part of tyhis is just defining the halo conceptually.
@@ -21,39 +27,41 @@ public class SoulModel{
 		For simplicities sake, let it start out being represented by a simple line*/
 		
 		int col = (255<<16)+(255<<8)+(255);
-		int HaloPointIndex = vertexTable.size();
-		int HaloLineIndex = edgeTable.size();
-		int HaloPolygonIndex = polygonTable.size();
+		int hStretch = 20;
+		int HaloPointIndex = tables.vertexTable.size();
+		int HaloLineIndex = tables.edgeTable.size();
+		int HaloPolygonIndex = tables.polygonTable.size();
 		
 		// Handle the outer Ring First
-		AddPoint(100,50);
-		AddPoint(125,35);
-		AddPoint(175,35);
-		AddPoint(200,50);
-		AddPoint(175,65);
-		AddPoint(125,65);
-		AddLine(HaloPointIndex+0,HaloPointIndex+1,col);
-		AddLine(HaloPointIndex+1,HaloPointIndex+2,col);
-		AddLine(HaloPointIndex+2,HaloPointIndex+3,col);
-		AddLine(HaloPointIndex+3,HaloPointIndex+4,col);
-		AddLine(HaloPointIndex+4,HaloPointIndex+5,col);
-		AddLine(HaloPointIndex+5,HaloPointIndex+0,col);
+		tables.AddPoint(100-hStretch,50); // 0
+		tables.AddPoint(125-hStretch,35); // 1
+		tables.AddPoint(175+hStretch,35); // 2
+		tables.AddPoint(200+hStretch,50); // 3
+		tables.AddPoint(175+hStretch,65); // 4
+		tables.AddPoint(125-hStretch,65); // 5
+		tables.AddLine(HaloPointIndex+0,HaloPointIndex+1,col); // 0
+		tables.AddLine(HaloPointIndex+1,HaloPointIndex+2,col); // 1
+		tables.AddLine(HaloPointIndex+2,HaloPointIndex+3,col); // 2
+		tables.AddLine(HaloPointIndex+3,HaloPointIndex+4,col); // 3
+		tables.AddLine(HaloPointIndex+4,HaloPointIndex+5,col); // 4
+		tables.AddLine(HaloPointIndex+5,HaloPointIndex+0,col); // 5
 		
 		// Now the inner Ring
-		AddPoint(110,50);
-		AddPoint(127,40);
-		AddPoint(173,40);
-		AddPoint(190,50);
-		AddPoint(173,60);
-		AddPoint(127,60);
-		AddLine(HaloPointIndex+6,HaloPointIndex+7,col);
-		AddLine(HaloPointIndex+7,HaloPointIndex+8,col);
-		AddLine(HaloPointIndex+8,HaloPointIndex+9,col);
-		AddLine(HaloPointIndex+9,HaloPointIndex+10,col);
-		AddLine(HaloPointIndex+10,HaloPointIndex+11,col);
-		AddLine(HaloPointIndex+11,HaloPointIndex+6,col);
+		tables.AddPoint(110-hStretch,50); // 6
+		tables.AddPoint(127-hStretch,40); // 7
+		tables.AddPoint(173+hStretch,40); // 8
+		tables.AddPoint(190+hStretch,50); // 9
+		tables.AddPoint(173+hStretch,60); // 10
+		tables.AddPoint(127-hStretch,60); // 11
+		tables.AddLine(HaloPointIndex+6,HaloPointIndex+7,col); // 6
+		tables.AddLine(HaloPointIndex+7,HaloPointIndex+8,col); // 7
+		tables.AddLine(HaloPointIndex+8,HaloPointIndex+9,col); // 8
+		tables.AddLine(HaloPointIndex+9,HaloPointIndex+10,col); // 9
+		tables.AddLine(HaloPointIndex+10,HaloPointIndex+11,col); // 10
+		tables.AddLine(HaloPointIndex+11,HaloPointIndex+6,col); // 11 
 		
-		// Now Triangulate and declare the surfaces
+		// tables.AddPolygon(HaloLineIndex+0,HaloLineIndex+1,HaloLineIndex+6); // 0
+		// tables.AddFilledSurface(new int[]{HaloLineIndex,HaloLineIndex+1,HaloLineIndex+2,HaloLineIndex+3,HaloLineIndex+4,HaloLineIndex+5},col);
 	}
 	
 	/*public void AddHorns(){
@@ -65,33 +73,37 @@ public class SoulModel{
 	public void AddBadWings(){
 	}*/
 	
-	public void AddPoint(Integer x, Integer y){
-		vertexTable.add(new ArrayList<Integer>());
-		vertexTable.get(vertexTable.size()-1).add(x);
-		vertexTable.get(vertexTable.size()-1).add(y);
-	}
-	
-	public void AddLine(Integer endIndex1, Integer endIndex2, Integer color){
-		edgeTable.add(new ArrayList<Integer>());
-		edgeTable.get(edgeTable.size()-1).add(endIndex1);
-		edgeTable.get(edgeTable.size()-1).add(endIndex2);
-		edgeTable.get(edgeTable.size()-1).add(color);
-	}
-	
-	public void AddPolygon(Integer line1, Integer line2, Integer line3, Integer color){
-		polygonTable.add(new ArrayList<Integer>());
-		polygonTable.get(polygonTable.size()-1).add(line1);
-		polygonTable.get(polygonTable.size()-1).add(line2);
-		polygonTable.get(polygonTable.size()-1).add(line3);
-		polygonTable.get(polygonTable.size()-1).add(color);
-	}
-	
-	public void AddCircle(Integer xCenter, Integer yCenter, Integer radius, Integer color){
-		circleTable.add(new ArrayList<Integer>());
-		circleTable.get(circleTable.size()-1).add(xCenter);
-		circleTable.get(circleTable.size()-1).add(yCenter);
-		circleTable.get(circleTable.size()-1).add(radius);
-		circleTable.get(circleTable.size()-1).add(color);
+	public void displayModel(){
+		JFrame frame = new JFrame("Line Drawer");
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);		
+		BufferedImage canvas = new BufferedImage(300, 800, BufferedImage.TYPE_INT_RGB);
+		BresenhamLineDrawer artist = new BresenhamLineDrawer();
+		SimpleGraphicsPackage graphics = new SimpleGraphicsPackage();
+		String[] blegh = new String[]{null};
+		// Now we have to loop through the Model's tables to draw everything correctly.
+		for(int line = 0;line < tables.edgeTable.size();line++){
+			int[] newLine = new int[5];
+			newLine[0] = tables.vertexTable.get(tables.edgeTable.get(line).get(0)).get(0);
+			newLine[1] = tables.vertexTable.get(tables.edgeTable.get(line).get(0)).get(1);
+			newLine[2] = tables.vertexTable.get(tables.edgeTable.get(line).get(1)).get(0);
+			newLine[3] = tables.vertexTable.get(tables.edgeTable.get(line).get(1)).get(1);
+			newLine[4] = tables.edgeTable.get(line).get(2);
+			artist.BresenDraw(canvas,blegh,graphics.LineClipper(canvas,newLine));
+		}
+		for(int circle = 0;circle < tables.circleTable.size();circle++){
+			int[] newCircle = new int[4];
+			newCircle[0] = tables.circleTable.get(circle).get(0);
+			newCircle[1] = tables.circleTable.get(circle).get(1);
+			newCircle[2] = tables.circleTable.get(circle).get(2);
+			newCircle[3] = tables.circleTable.get(circle).get(3);
+			artist.BresenCircle(canvas,newCircle,true);
+		}
+		//The following two lines are cheater - eventually we'll make this part of proper filling
+		artist.FloodFill(canvas,150,500,tables.edgeTable.get(0).get(2),canvas.getRGB(0,0));
+		//artist.FloodFill(canvas,150,37,((190<<16)+(190<<8)+190),canvas.getRGB(0,0));
+		frame.getContentPane().add(new JLabel(new ImageIcon(canvas)));
+		frame.pack();
+		frame.setVisible(true);
 	}
 	
 	SoulModel(){
@@ -104,13 +116,17 @@ public class SoulModel{
 		//So how do we add to an ArrayList?
 		//Adding a new row is done via NAME.add(new ArrayList<TYPE>());
 		//How do we add to a row? possible NAME.get(ROW).add(INTEGER)
-		AddPoint(50,350);
-		AddPoint(250,350);
-		AddPoint(150,750);
-		AddLine(0,1,null);
-		AddLine(1,2,null);
-		AddLine(0,2,null);
-		AddPolygon(0,1,2,null);
-		AddCircle(150,200,100,null);
+		tables.AddPoint(50,350);
+		tables.AddPoint(250,350);
+		tables.AddPoint(150,750);
+		tables.AddLine(0,1,null);
+		tables.AddLine(1,2,null);
+		tables.AddLine(0,2,null);
+		/*tables.AddPolygon(0,1,2);
+		tables.surfaceTable.add(new ArrayList<Integer>());
+		tables.surfaceTable.get(0).add(0);
+		tables.surfaceTable.get(0).add(null);*/
+		tables.AddFilledSurface(new int[]{0,1,2},null);
+		tables.AddCircle(150,200,100,null);
 	}
 }

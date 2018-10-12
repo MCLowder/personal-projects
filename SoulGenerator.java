@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import javax.swing.*;
+import java.util.ArrayList;
 
 //package import block
 
@@ -13,6 +14,7 @@ public class SoulGenerator{
 	public static boolean debugMode = false;
 	
 	public static void main(String[] args){
+		//ArrayList<Soul> population = new ArrayList<Soul>();
 		try{
 			if(Arrays.asList(args).contains("devs"))
 				Arrays.fill(devs,Integer.parseInt(args[Arrays.asList(args).indexOf("devs")+1])); // what is val?
@@ -33,36 +35,8 @@ public class SoulGenerator{
 				if(debugMode)
 					System.out.println(Arrays.toString(soulSample.ethicScores));
 				// Display block for showing off the model
-				JFrame frame = new JFrame("Line Drawer");
-				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);		
-				BufferedImage canvas = new BufferedImage(300, 800, BufferedImage.TYPE_INT_RGB);
-				BresenhamLineDrawer artist = new BresenhamLineDrawer();
-				SimpleGraphicsPackage graphics = new SimpleGraphicsPackage();
-				String[] blegh = new String[]{null};
-				// Now we have to loop through the Model's tables to draw everything correctly.
-				for(int line = 0;line < soulSample.model.edgeTable.size();line++){
-					int[] newLine = new int[5];
-					newLine[0] = soulSample.model.vertexTable.get(soulSample.model.edgeTable.get(line).get(0)).get(0);
-					newLine[1] = soulSample.model.vertexTable.get(soulSample.model.edgeTable.get(line).get(0)).get(1);
-					newLine[2] = soulSample.model.vertexTable.get(soulSample.model.edgeTable.get(line).get(1)).get(0);
-					newLine[3] = soulSample.model.vertexTable.get(soulSample.model.edgeTable.get(line).get(1)).get(1);
-					newLine[4] = soulSample.model.edgeTable.get(line).get(2);
-					artist.BresenDraw(canvas,blegh,graphics.LineClipper(canvas,newLine));
-				}
-				for(int circle = 0;circle < soulSample.model.circleTable.size();circle++){
-					int[] newCircle = new int[4];
-					newCircle[0] = soulSample.model.circleTable.get(circle).get(0);
-					newCircle[1] = soulSample.model.circleTable.get(circle).get(1);
-					newCircle[2] = soulSample.model.circleTable.get(circle).get(2);
-					newCircle[3] = soulSample.model.circleTable.get(circle).get(3);
-					artist.BresenCircle(canvas,newCircle,true);
-				}
-				//The following two lines are cheater - eventually we'll make this part of proper filling
-				artist.FloodFill(canvas,150,500,soulSample.model.edgeTable.get(0).get(2),canvas.getRGB(0,0));
-				//artist.FloodFill(canvas,150,37,((190<<16)+(190<<8)+190),canvas.getRGB(0,0));
-				frame.getContentPane().add(new JLabel(new ImageIcon(canvas)));
-				frame.pack();
-				frame.setVisible(true);
+				if(Arrays.asList(args).contains("display"))
+					soulSample.model.displayModel();
 		
 				System.out.println("");
 			}

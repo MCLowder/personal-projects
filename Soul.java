@@ -6,23 +6,23 @@ import java.util.Arrays;
 
 public class Soul{
 	
-	public enum Ethic {EVIL, PRIDE, SLOTH, LUST, WRATH, GLUTTONY, ENVY, AVARICE, HUMILITY, DILLIGENCE, CHASTITY, PATIENCE, TEMPERANCE, KINDNESS, CHARITY, GOOD};
-	public enum Status {ARCHDEMON, DEMON, DAMNED, LIMBO, BLESSED, ANGEL, ARCHANGEL}; // Gotta admit, not in love with the term Archdemon.
+	enum Ethic {EVIL, PRIDE, SLOTH, LUST, WRATH, GLUTTONY, ENVY, AVARICE, HUMILITY, DILLIGENCE, CHASTITY, PATIENCE, TEMPERANCE, KINDNESS, CHARITY, GOOD};
+	enum Status {ARCHDEMON, DEMON, DAMNED, LIMBO, BLESSED, ANGEL, ARCHANGEL}; // Gotta admit, not in love with the term Archdemon.
 	
-	public static int SCORE_CAP = 50;
-	public static int GENERIC_TOLERANCE = 5; 
+	static int SCORE_CAP = 50;
+	static int GENERIC_TOLERANCE = 5; 
 	
-	public int[] classTiers = new int[]{0,15,35};
-	public int[] ethicScores;
-	public double average;
-	public Ethic DominantEthic;
-	public int DominantScore = 0;
-	public Status soulStatus;
-	public String Bio;
+	int[] classTiers = new int[]{0,15,35};
+	int[] ethicScores;
+	double average;
+	Ethic DominantEthic;
+	int DominantScore = 0;
+	Status soulStatus;
+	String Bio;
 	
-	public SoulModel model = new SoulModel();
-	public int color; // might be able to get rid of this, since we're assigning it to the model
-	public int[] position = new int[]{0,0,0}; // Could possibly get away with 2d, but might as well be 3d
+	SoulModel model = new SoulModel();
+	int color; // might be able to get rid of this, since we're assigning it to the model
+	int[] position = new int[]{0,0,0}; // Could possibly get away with 2d, but might as well be 3d
 	
 	public void UpdateStats(){
 		int axis = -1;
@@ -145,11 +145,13 @@ public class Soul{
 		
 		//This is where color is converted and assigned
 		color = (colorRGB[0]<<16) + (colorRGB[1]<<8) + (colorRGB[2]);
-		for(int line=0; line < model.edgeTable.size();line++){
-			model.edgeTable.get(line).set(2,color);
+		for(int line=0; line < model.tables.edgeTable.size();line++){
+			model.tables.edgeTable.get(line).set(2,color);
 		}
-		for(int circle=0; circle < model.circleTable.size();circle++){
-			model.circleTable.get(circle).set(3,color);
+		for(int surface=0; surface<model.tables.surfaceTable.size();surface++)
+			model.tables.surfaceTable.get(surface).set(model.tables.surfaceTable.get(surface).size()-1,color);
+		for(int circle=0; circle < model.tables.circleTable.size();circle++){
+			model.tables.circleTable.get(circle).set(3,color);
 		}
 		if(soulStatus==Status.ANGEL || soulStatus == Status.ARCHANGEL)
 			model.AddHalo();
