@@ -3,6 +3,7 @@ import java.awt.image.BufferedImage;
 import java.util.Scanner;
 import javax.swing.*; // https://docs.oracle.com/javase/tutorial/uiswing/examples/components/FrameDemoProject/src/components/FrameDemo.java
 import java.util.Arrays;
+import java.util.ArrayList;
 
 public class BresenhamLineDrawer{
 	static int caseCount1, caseCount2, caseCount3, caseCount4, caseCount5;
@@ -412,15 +413,85 @@ public class BresenhamLineDrawer{
 		}
 	}
 	
-	public static void YXFill(BufferedImage canvas, SoulModel model){
-		for(int poly = 0; poly < model.polygonTable.size()-1;poly++){
-			// find all of the intersections
-			for(int scanline=0;scanline<canvas.getHeight()-1;scanline++){
-				
+	public static void YXFill(BufferedImage canvas, GeometricTables tables, int[] lightsource){ // could see this pulling a specific surface every time, but that just changes where loops will be. 
+		for(int surf = 0; surf < tables.surfaceTable.size();surf++){
+			// I think step 1 is to find the appropriate range 
+			for(int poly=0;poly<tables.surfaceTable.get(surf).size()-1;poly++){ // Actually, I think this is the level the actual line drawing needs to be done at. When broken into triangles, the singularity problem doesn't exist
+				int minY=canvas.getHeight();
+				int maxY=0;
+				ArrayList<ArrayList<ArrayList<Integer>>> edgePoints = new ArrayList<ArrayList<ArrayList<Integer>>>(); // This is when we get into some real bullshit.
+				ArrayList<ArrayList<Double>> constants = new ArrayList<ArrayList<Double>>();
+				for(int edge=0;edge<3;edge++){
+					if(tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(0)).get(1)>maxY)
+						maxY = tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(0)).get(1);
+					if(tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(0)).get(1)<minY)
+						minY = tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(0)).get(1);
+					if(tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(1)).get(1)>maxY)
+						maxY = tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(1)).get(1);
+					if(tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(1)).get(1)<minY)
+						minY = tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(1)).get(1);
+					edgePoints.add(new ArrayList<ArrayList<Integer>>());
+					edgePoints.get(edge).add(tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(0)));
+					edgePoints.get(edge).add(tables.vertexTable.get(tables.edgeTable.get(tables.polygonTable.get(tables.surfaceTable.get(surf).get(poly)).get(edge)).get(1)));
+					//while we're at it, why not calc the edge equations? Better to only calc once, reference as needed in scanline
+					// can't use same, since the slope must be double, this is Integer.
+					constants.add(new ArrayList<Double>());
+					if((edgePoints.get(edge).get(1).get(0)-edgePoints.get(edge).get(0).get(0))!=0){
+						constants.get(edge).add((double)(edgePoints.get(edge).get(1).get(1)-edgePoints.get(edge).get(0).get(1))/(double)(edgePoints.get(edge).get(1).get(0)-edgePoints.get(edge).get(0).get(0)));
+						constants.get(edge).add(edgePoints.get(edge).get(1).get(1)-(constants.get(edge).get(0)*edgePoints.get(edge).get(1).get(0)));
+					}
+					else{
+						constants.get(edge).add(null);
+						constants.get(edge).add(null);
+					}
+				}
+				if(minY<0)
+					minY=0;
+				if(maxY>canvas.getHeight())
+					maxY=0;
+				// Ideally, we grab some information about the edge first - some ability to skip unneeded edges in the loop would be nice.
+				for(int scanline=minY;scanline<maxY;scanline++){
+					// now we just find each edge intersection, immediately draw the line (shader function?)
+					// loop through the edges, find the intersections,
+					ArrayList<Integer> inter = new ArrayList<Integer>();
+					for(int edge=0;edge<3;edge++){ // abuse here - we know we're dealing with triangles, so we know the number of edges
+						if((edgePoints.get(edge).get(0).get(1)>scanline && edgePoints.get(edge).get(1).get(1)>scanline) || (edgePoints.get(edge).get(0).get(1)<scanline && edgePoints.get(edge).get(1).get(1)<scanline)) // Catches edges that are above / below scanline
+							continue;
+						else if(edgePoints.get(edge).get(0).get(1)==scanline && edgePoints.get(edge).get(1).get(1)==scanline) // Catches Horizontal lines - line renders filling line redundant
+							continue;
+						//At this point, we know the edge intersects with the scanline. just find the x value, and we're good. Equation first
+						// Catch we should do first - intersection is the vertex - manage this carefully.
+						else if(edgePoints.get(edge).get(0).get(1)==scanline || edgePoints.get(edge).get(1).get(1)==scanline){ // Catches all cases where the scanline's hitting a vertex. 
+							if(edgePoints.get(edge).get(0).get(1)==scanline){
+								if(!inter.contains(edgePoints.get(edge).get(0).get(0)))
+									inter.add(edgePoints.get(edge).get(0).get(0));
+							}
+							else{
+								if(!inter.contains(edgePoints.get(edge).get(1).get(0)))
+									inter.add(edgePoints.get(edge).get(1).get(0));
+							}
+						}
+						else if(constants.get(edge).get(0)!=null)
+							inter.add((int)((scanline-constants.get(edge).get(1))/constants.get(edge).get(0))); // catches vertical lines that don't math the solution well
+						else
+							inter.add(edgePoints.get(edge).get(0).get(0)); // general case
+					}
+					if(inter.size()==1)
+						inter.add(inter.get(0));
+					ShadedLine(canvas, scanline, inter.get(0), inter.get(1), tables.surfaceTable.get(surf).get(tables.surfaceTable.get(surf).size()-1), lightsource);
+				}
 			}
 		}
 		// Sort by Y, and then by X
 		// Call BresenDraw the correct numer of times
+	}
+	
+	public static void ShadedLine(BufferedImage canvas, int y, int x1, int x2, int color, int[] lightsource){
+		if(lightsource.length==0){
+			BresenDraw(canvas,new String[0],new int[]{x1,y,x2,y,color});
+		}
+		else if(lightsource.length!=2)
+			System.out.println("Bad Light dimensions");
 	}
 	
 	public static void main(String args[]){

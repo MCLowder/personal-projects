@@ -8,10 +8,10 @@ import java.util.ArrayList;
 //package import block
 
 public class SoulGenerator{
-	public static int[] devs = new int[7];
-	public static int[] means = new int[7];
-	public static int maxTest = 1;
-	public static boolean debugMode = false;
+	static int[] devs = new int[7];
+	static int[] means = new int[7];
+	static int maxTest = 1;
+	static boolean debugMode = false;
 	
 	public static void main(String[] args){
 		//ArrayList<Soul> population = new ArrayList<Soul>();
@@ -36,7 +36,7 @@ public class SoulGenerator{
 					System.out.println(Arrays.toString(soulSample.ethicScores));
 				// Display block for showing off the model
 				if(Arrays.asList(args).contains("display"))
-					soulSample.model.displayModel();
+					soulSample.model.displayModel(new int[0]);
 		
 				System.out.println("");
 			}

@@ -145,16 +145,11 @@ public class Soul{
 		
 		//This is where color is converted and assigned
 		color = (colorRGB[0]<<16) + (colorRGB[1]<<8) + (colorRGB[2]);
-		for(int line=0; line < model.tables.edgeTable.size();line++){
-			model.tables.edgeTable.get(line).set(2,color);
-		}
-		for(int surface=0; surface<model.tables.surfaceTable.size();surface++)
-			model.tables.surfaceTable.get(surface).set(model.tables.surfaceTable.get(surface).size()-1,color);
-		for(int circle=0; circle < model.tables.circleTable.size();circle++){
-			model.tables.circleTable.get(circle).set(3,color);
-		}
+		model.UpdateBaseColor(color);
 		if(soulStatus==Status.ANGEL || soulStatus == Status.ARCHANGEL)
 			model.AddHalo();
+		if(soulStatus==Status.DEMON || soulStatus == Status.ARCHDEMON)
+			model.AddHorns();
 		//This is where Sundries are handled
 	}
 	
