@@ -99,31 +99,10 @@ public class TableDriver{
 		tables.AddLine(hornPointIndex+4,hornPointIndex+5,hornColor); // 4
 		tables.AddLine(hornPointIndex+5,hornPointIndex+6,hornColor); // 5
 		tables.AddLine(hornPointIndex+6,hornPointIndex+0,hornColor); // 6
-		//tables.AddFilledSurface(new int[]{hornLineIndex+0,hornLineIndex+1,hornLineIndex+2,hornLineIndex+3,hornLineIndex+4,hornLineIndex+5,hornLineIndex+6}, hornColor);
+		tables.AddFilledSurface(new int[]{hornLineIndex+0,hornLineIndex+1,hornLineIndex+2,hornLineIndex+3,hornLineIndex+4,hornLineIndex+5,hornLineIndex+6}, hornColor);
 		
-		JFrame frame = new JFrame("Line Drawer");
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);		
-		BufferedImage canvas = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
-		BresenhamLineDrawer artist = new BresenhamLineDrawer();
-		SimpleGraphicsPackage graphics = new SimpleGraphicsPackage();
-		String[] blegh = new String[]{null};
-		// Now we have to loop through the Model's tables to draw everything correctly.
-		
-		for(int line = 0;line < tables.edgeTable.size();line++){
-			int[] newLine = new int[5];
-			newLine[0] = tables.vertexTable.get(tables.edgeTable.get(line).get(0)).get(0);
-			newLine[1] = tables.vertexTable.get(tables.edgeTable.get(line).get(0)).get(1);
-			newLine[2] = tables.vertexTable.get(tables.edgeTable.get(line).get(1)).get(0);
-			newLine[3] = tables.vertexTable.get(tables.edgeTable.get(line).get(1)).get(1);
-			newLine[4] = tables.edgeTable.get(line).get(2);
-			artist.BresenDraw(canvas,blegh,graphics.LineClipper(canvas,newLine));
-		}
-		System.out.println(tables.polygonTable);
-		System.out.println(tables.edgeTable);
-		//artist.YXFill(canvas,tables,new int[0]);
-		
-		frame.getContentPane().add(new JLabel(new ImageIcon(canvas)));
-		frame.pack();
-		frame.setVisible(true);
+		Artist artist = new Artist(tables);
+		artist.DrawAllTheThings();
+		artist.DisplayCanvas();
 	}
 }

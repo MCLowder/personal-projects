@@ -12,6 +12,7 @@ public class SoulGenerator{
 	static int[] means = new int[7];
 	static int maxTest = 1;
 	static boolean debugMode = false;
+	static Artist artist;
 	
 	public static void main(String[] args){
 		//ArrayList<Soul> population = new ArrayList<Soul>();
@@ -36,7 +37,10 @@ public class SoulGenerator{
 					System.out.println(Arrays.toString(soulSample.ethicScores));
 				// Display block for showing off the model
 				if(Arrays.asList(args).contains("display"))
-					soulSample.model.displayModel(new int[0]);
+					artist = new Artist(soulSample.GetModel().GetTables());
+					artist.DrawAllLines();
+					artist.DrawAllCircles(true);
+					artist.DisplayCanvas();
 		
 				System.out.println("");
 			}

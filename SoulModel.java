@@ -8,7 +8,7 @@ import javax.swing.*;
 
 public class SoulModel{
 	
-	GeometricTables tables = new GeometricTables();
+	private GeometricTables tables = new GeometricTables();
 	
 	// Updates the core elements of the body to be the new color.
 	// NOTE: ATM, this loops through everything so as to make it easy. However, shouldn't we know which lines these are?
@@ -95,6 +95,8 @@ public class SoulModel{
 	}*/
 	
 	// This needs to be updated to the more proper 'encapsulated class' setup
+	// possibly just remove this method entirely?
+	// Let's leave for now, under the assumption that it will mostly be a debugging method
 	public void displayModel(int[] lightsource){
 		JFrame frame = new JFrame("Line Drawer");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);		
@@ -127,6 +129,11 @@ public class SoulModel{
 		frame.getContentPane().add(new JLabel(new ImageIcon(canvas)));
 		frame.pack();
 		frame.setVisible(true);
+	}
+	
+	// returns the tables for manipulation
+	public GeometricTables GetTables(){
+		return tables;
 	}
 	
 	SoulModel(){
